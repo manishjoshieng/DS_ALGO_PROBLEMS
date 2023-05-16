@@ -2,16 +2,16 @@
 #include <deque>
 #include <cassert>
 #include <algorithm>
-
 using namespace std;
 
+template <typename Key= int , typename Value = int>
 class LFUCache{
 
     public:
         LFUCache(int size) : _size(size){}
 
 
-        void put(int key,int value){
+        void put(Key key,Value value){
             auto itr = _entries.find(key);
             if(itr == _entries.end()){
                 clearSpace();
@@ -28,13 +28,14 @@ class LFUCache{
             }
         }
 
-        int get(int key){
+        Value get(Key key){
             auto itr = _entries.find(key);
             if(itr != _entries.end()) {
                 updateFreqency(key);
                 return _entries[key]._value;
             }
-            return -1;
+            if(std::is_same<Value, int>::value) return -1;
+            return Value();
         }
 
     private:
@@ -47,7 +48,7 @@ class LFUCache{
             }
         }
 
-        void updateFreqency(int key){
+        void updateFreqency(Key key){
             _entries[key]._freq++;
             auto itr = _entries[key]._position;
 
@@ -68,18 +69,18 @@ class LFUCache{
         struct mapValue
         {
             int                                 _freq;
-            int                                 _value;
-            deque<int>::iterator                _position;
+            Value                                  _value;
+            typename deque<Key>::iterator       _position;
         };
      
         int                                  _size;
-        unordered_map<int, mapValue >        _entries;
-        deque<int>                           _order;
+        unordered_map<Key, mapValue >        _entries;
+        deque<Key>                           _order;
 }; 
 
 
 int main() {
-    LFUCache cache(3);
+    LFUCache<int> cache(3);
 
     cache.put(1,5);
     assert(cache.get(1) == 5);
