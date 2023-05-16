@@ -1,1 +1,3 @@
 ./LRU_CACHE/build
+./LFU_CACHE/build
+./LFU_CACHE/.vscode
